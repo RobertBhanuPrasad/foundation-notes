@@ -197,3 +197,102 @@ Recursion: looping via function calls
 Lazy sequences: infinite or delayed data
 Macros: generate code
 Concurrency: safe shared state**
+
+**lazy sequences** - these are functions like they have written and kept as like backup and when you want only they will untill then they will wait (like range, repeat etc) and because of this our memory or data will be saved.
+
+    examples: 
+        1) (def even (map #(* % %) (filter even? (range)))) - usage - (take 5 even) - (0 4 16 36 64)
+        2) (def odd (map #(* % %) (filter odd? (range)))) - usafe - (take 5 odd) - (1 9 25 49 81)
+
+
+**Map, mapv and for loops** - 
+    map : it is collection of each element in collection return lazy sequence and it is usefull for the large or infinite data.
+    mapv : it will also do same but it is egarly returns the vector.
+    for loop :  it is used to go to each element in collection and perform our required action.
+
+    examples: map - (map inc [1 2 3]) - (1 2 3)
+              mapv - (mapv inc [1 2 3]) - [1 2 3]
+              for loop - (for [x [1 2 3] :when (odd? x)] (* x x)) - (1 9)
+
+ **inc** - inc is a built‑in Clojure function that simply returns the increment of a number ➕.
+
+If you call (inc 5), you get 6. It’s shorthand for adding 1, and it works on integers, floats, and even BigInts.
+
+**Cond, condp, case** : 
+    let’s break down cond, condp, and case so you know when to reach for each 🛠️.
+
+    "cond" :  checks multiple conditions in order, returning the value from the first true branch—ideal for varied logical checks.
+    "condp" :  is like cond but focuses on comparing a single value against multiple possibilities, using a predicate (like = or >).
+    "case" :  matches a single value against constants—fast and simple, but no complex expressions allowed in its tests.
+
+    Examples :
+        (cond 
+        (< x 0) "negative"
+        (> x 0) "positive"
+        (= x 0) "zero")
+
+        (condp = x
+            1 "one"
+            2 "two"
+            "other")
+
+        (case x
+            1 "one"
+            2 "two"
+            "other")
+
+**Threads - ->, ->>, cond->, ->as** : 
+    threading macros in Clojure, and they make multi‑step data transformations easier to read 📎.
+
+    -> (thread‑first) inserts the previous result as the first argument in the next expression—great for functions where the main data comes first.
+    ->> (thread‑last) inserts the result as the last argument—ideal for sequences where functions expect the collection last.
+    cond-> threads conditionally—applies steps only if conditions are true.
+    as-> lets you name the threaded value at each step for flexible placement.
+
+    Examples :
+        (-> {:a 1} (assoc :b 2) (update :a inc)) - {:a 2 :b 2}
+        (->> [1 2 3] (map inc) (filter odd?)) - (3)
+        (cond-> {:a 1} true (assoc :b 2) false (assoc :c 3)) - {:a 1, :b 2}
+        (as-> [1 2 3] xs (map inc xs) (filter odd? xs)) - (3)
+
+        Explaination : 
+            Got it—let’s walk through each of your four examples step‑by‑step so you see exactly how they run and what they output 🧐.
+
+            1. (-> {:a 1} (assoc :b 2) (update :a inc))
+
+            -> threads the value as the first argument to each function.
+            Start: {:a 1}
+            (assoc :b 2) → {:a 1 :b 2}
+            (update :a inc) → updates :a to (inc 1) → 2
+            Output: {:a 2 :b 2}
+            2. (->> [1 2 3] (map inc) (filter odd?))
+
+            ->> threads the value as the last argument.
+            Start: [1 2 3]
+            (map inc [1 2 3]) → (2 3 4) (lazy sequence)
+            (filter odd? (2 3 4)) → (3)
+            Output: (3) (lazy seq)
+            3. (cond-> {:a 1} true (assoc :b 2) false (assoc :c 3))
+
+            cond-> applies transformations only if the condition before them is true.
+            Start: {:a 1}
+            Condition true → (assoc :b 2) → {:a 1 :b 2}
+            Condition false → (assoc :c 3) skipped
+            Output: {:a 1 :b 2}
+            4. (as-> [1 2 3] xs (map inc xs) (filter odd? xs))
+
+            as-> lets you name the threaded value (xs) and place it anywhere in each step.
+            Start: xs = [1 2 3]
+            (map inc xs) → (2 3 4)
+            (filter odd? xs) → (3)
+            Output: (3) (lazy seq)
+
+
+**Keywords** : keywords are special identifiers are used as keys in map.
+    example:
+        (:amount {:category "food" :amount 100}) - 100
+
+
+        
+
+        

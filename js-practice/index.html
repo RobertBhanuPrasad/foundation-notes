@@ -1,12 +1,105 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JS Assignment Practice</title>
-</head>
-<body>
-    <h1>JavaScript Assignments Practice</h1>
-    <script src="script.js"></script>
-</body>
+<!-- - declares the document as HTML5 -->
+<!DOCTYPE html> 
+<!-- - defines the languge of the page is english -->
+<br lang="en"> 
+    <head>
+         <!-- sets the character encoding to UTF-8 (supports multiple lamguages) -->
+        <meta charset="UTF-8"> 
+        <!-- - Ensures proper scalling in mobile devices for responsive design. -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+        <title>my project</title>
+        <script src="bhanu.js"></script> 
+    </head>
+    <br>
+        <h1>welcome to my project</h1>
+        <h3>h3 page</h3>
+        <p>project paragraph</p>
+        <br>
+            <h1>my project</h1>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About Contact</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <main>
+                <section>
+                    <h1>first section</h1>
+                    <p>this section will gives the information of my website</p>
+                </section>
+                <article>
+                    <h2>Article 1</h2>
+                    <p>Something paragraph about the article</p>
+                </article>
+                <aside>
+                    <h3>Links</h3>
+                    <ul>
+                        <li><a href="#link1">Link 1</a></li>
+                        <li><a href="#link2">Link 2</a></li>
+                    </ul>
+                </aside>
+            </main>
+                <footer>
+                    <p>$ 2025. All rigts are reserved</p>
+                </footer>
+
+                <!-- Headings -->
+                 <h1>heading 1</h1>
+                 <h2>heading 2</h2>
+
+                 <h2>Paragraph</h2>
+                  <p>some paragraph about anything</p>
+                
+                  <h2>Unordered list</h2>
+                  <ul>  
+                    <li>item 1</li>
+                    <li>item 2</li>
+                    <li>item 3</li>
+                  </ul>
+
+                  <h2>Ordered list</h2>
+                  <ol>
+                    <li>item 1</li>
+                    <li>item 2</li>
+                    <li>item 3</li>
+                  </ol>
+
+                  <h2>Block Elements(takes the full width of the page)</h2>
+                  <div>div bhanu</div>
+                  <p>paragraph</p>
+
+                  <h2>Inline Elements(takes the width how much content they have)</h2>
+                  <span>span bhanu</span><br>
+                  <a href="#a tag">a tag</a> <br>like break tag</br>
+                  <strong style="color: red;">strong bold letter like tag</strong>
+
+                  <h2>Hyperlinks..</h2>
+                  <p>
+                    <a href="www.google.com" target="_blank" rel="noopener noreferrer">Visit Google (href is for link to open, target is for where to open, rel is for security when we use the target="_blank")</a>
+                  </p>
+
+                  <img src="somthingimage.png" alt="this alt is used as like text when image takes time to load">
+
+                  <h2>Contact Form:</h2>
+                  <br action="/submit-form" method="POST">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+                    <br></br>
+                    <label for="email">Email:</label>
+                    <input type="text" id="email" name="email" required>
+                  <br></br>
+                    <label for="topic">Topic:</label>
+                    <select id="topic" name="topic" required>
+                        <option value="maths">Maths</option>
+                        <option value="physics">Physics</option>
+                        <option value="chemistry">Chemistry</option>
+                    </select>
+                    <br></br>
+                    <label for="message">Message:</label>
+                    <textarea id="message" name="message" rows="4" cols="50" required></textarea>
+                    <br></br>
+                    <button type="submit">Submit</button>
+                  </form>
+    </body>
 </html>
