@@ -10,10 +10,10 @@
 
 (defn set-foo [{:keys [session params] :as ctx}]
   (biff/submit-tx ctx
-    [{:db/op :update
-      :db/doc-type :user
-      :xt/id (:uid session)
-      :user/foo (:foo params)}])
+                  [{:db/op :update
+                    :db/doc-type :user
+                    :xt/id (:uid session)
+                    :user/foo (:foo params)}])
   {:status 303
    :headers {"location" "/app"}})
 
@@ -34,10 +34,10 @@
 
 (defn set-bar [{:keys [session params] :as ctx}]
   (biff/submit-tx ctx
-    [{:db/op :update
-      :db/doc-type :user
-      :xt/id (:uid session)
-      :user/bar (:bar params)}])
+                  [{:db/op :update
+                    :db/doc-type :user
+                    :xt/id (:uid session)
+                    :user/bar (:bar params)}])
   (biff/render (bar-form {:value (:bar params)})))
 
 (defn message [{:msg/keys [text sent-at]}]
@@ -59,10 +59,10 @@
 (defn send-message [{:keys [session] :as ctx} {:keys [text]}]
   (let [{:keys [text]} (cheshire/parse-string text true)]
     (biff/submit-tx ctx
-      [{:db/doc-type :msg
-        :msg/user (:uid session)
-        :msg/text text
-        :msg/sent-at :db/now}])))
+                    [{:db/doc-type :msg
+                      :msg/user (:uid session)
+                      :msg/text text
+                      :msg/sent-at :db/now}])))
 
 (defn chat [{:keys [biff/db]}]
   (let [messages (q db
@@ -115,10 +115,68 @@
       [:.h-1]
       [:.text-sm.text-gray-600
        "This demonstrates updating a value with a plain old form."])
+     [:button.text-black-500.hover:text-black-800 {:type "button" :hx-get "/app/test" :hx-target "body" :hx-swap "outerHTML" :class "btn primary"}
+      "Onclick"]
+     [:a {:href "/app/test"} "Get to test page"]
+     [:button {:type "button" :hx-get "/app/bulk-update" :hx-target "body" :hx-swap "innerHTML" :class "btn danger"} "Bulk update page"]
+     [:button {:type "button" :hx-get "/app/value-select" :hx-target "body" :hx-swap "outerHTML" :class "btn primary"} "Value Select"]
      [:.h-6]
      (bar-form {:value bar})
      [:.h-6]
      (chat ctx))))
+
+(defn test [ctx]
+  (ui/page
+   ctx
+  [:div#main-content {:hx-target "this" :hx-swap "outerHTML"}
+   [:div [:label "First Name"] ": bhanu"]
+   [:div [:label "Last Name"] ": robert"]
+   [:div [:label "Email"] ": bhanu@gmail.com"]
+   [:button.btn {:hx-get "/app/form" :class "btn primary" :type "button" :hx-target "#main-content" :hx-swap "outerHTML"} "Click to Edit"]]))
+
+
+(defn form-page [ctx]
+  [:form {:hx-put "/app/test" :hx-target "this" :hx-swap "outerHTML"}
+   [:div
+    [:label "First Name"]
+    [:input.w-full {:type "text" :name "firstName" :value "bhanu"}]]
+   [:div
+    [:label "Last Name"]
+    [:input.w-full {:type "text" :name "lastName" :value "robert"}]]
+   [:div
+    [:label "Email"]
+    [:input.w-full {:type "email" :name "email" :value "bhanu@gmail.com"}]]
+   [:button.btn {:type "submit" :hx-get "/app/test"} "Submit"]
+   [:button.btn {:hx-get "/app/test"} "Cancel"]])
+
+(defn bulk-update [ctx]
+  [:form {:hx-post "/users" :hx-swap "innerHTML settle:3s" :hx-target "#toast"}
+   [:table 
+    [:thead 
+     [:tr 
+      [:th "Name"]
+      [:th "Email"]
+      [:th "Active"]]]
+    [:tbody 
+     [:tr 
+      [:td "bhanu"]
+      [:td "robert@gmai.com"]
+      [:td [:input.w-full {:type "checkbox" :name "active:robert@gmal.com"}]]]]]
+   [:input {:type "submit" :value "Bulk Update" :class "btn primary"}]]
+  )
+
+(defn value-select [ctx] 
+  [:<>
+  [:div 
+   [:label "Make"]
+   [:select {:hx-get "/models" :hx-target "innerHTML" :hx-indicator ".htmx-indicator"}
+   [:option {:value "audi"} "Audi"]
+   [:option {:value "toyota"} "Toyota"]
+   [:option {:value "bmw"} "Bmw"]]]
+   [:div 
+    [:label "Model"]
+    [:select {:id "models" :name "model"}
+     [:option {:value "a1"} "A1"]]]])
 
 (defn ws-handler [{:keys [todo/chat-clients] :as ctx}]
   {:status 101
@@ -146,6 +204,10 @@
   {:static {"/about/" about-page}
    :routes ["/app" {:middleware [mid/wrap-signed-in]}
             ["" {:get app}]
+            ["/test" {:get test}]
+            ["/form" {:get form-page}]
+            ["/bulk-update" {:get bulk-update}]
+            ["/value-select" {:get value-select}]
             ["/set-foo" {:post set-foo}]
             ["/set-bar" {:post set-bar}]
             ["/chat" {:get ws-handler}]]

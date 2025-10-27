@@ -2,7 +2,8 @@
   (:require [com.biffweb :as biff]
             [muuntaja.middleware :as muuntaja]
             [ring.middleware.anti-forgery :as csrf]
-            [ring.middleware.defaults :as rd]))
+            [ring.middleware.defaults :as rd]
+            [ring.middleware.params :refer [wrap-params]]))
 
 (defn wrap-redirect-signed-in [handler]
   (fn [{:keys [session] :as ctx}]
@@ -33,12 +34,13 @@
 
 (defn wrap-site-defaults [handler]
   (-> handler
+      wrap-params
+      muuntaja/wrap-params
+      muuntaja/wrap-format
       biff/wrap-render-rum
       biff/wrap-anti-forgery-websockets
       csrf/wrap-anti-forgery
       biff/wrap-session
-      muuntaja/wrap-params
-      muuntaja/wrap-format
       (rd/wrap-defaults (-> rd/site-defaults
                             (assoc-in [:security :anti-forgery] false)
                             (assoc-in [:responses :absolute-redirects] true)

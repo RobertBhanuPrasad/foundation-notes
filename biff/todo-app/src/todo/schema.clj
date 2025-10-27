@@ -14,7 +14,15 @@
          [:xt/id       :msg/id]
          [:msg/user    :user/id]
          [:msg/text    :string]
-         [:msg/sent-at inst?]]})
+         [:msg/sent-at inst?]]
+
+   ;; Add new todo entity
+   :todo/id :uuid
+   :todo [:map {:closed true}
+          [:xt/id :todo/id]
+          [:todo/title :string]
+          [:todo/done boolean?]
+          [:todo/created-at inst?]]})
 
 (def module
   {:schema schema})

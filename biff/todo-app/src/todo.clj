@@ -12,13 +12,15 @@
             [clojure.tools.namespace.repl :as tn-repl]
             [malli.core :as malc]
             [malli.registry :as malr]
-            [nrepl.cmdline :as nrepl-cmd])
+            [nrepl.cmdline :as nrepl-cmd]
+            [todo.todo :as todo-module])
   (:gen-class))
 
 (def modules
   [app/module
    (biff/authentication-module {})
    home/module
+   todo-module/module 
    schema/module
    worker/module])
 
