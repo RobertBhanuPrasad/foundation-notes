@@ -172,3 +172,66 @@ If you want, I can:
 Show exact corrected snippets for your project (swap body usages to #main-content and update your handlers), or
 Add a fragment-or-page helper so direct navigations return full pages while htmx requests return fragments. Which would you like?
 
+**Difference between outerHTML and innerHTML**:
+
+Why innerHTML worked and outerHTML caused errors — simple, precise
+
+innerHTML replaces only the inside (children) of the target element. The target element itself (its id, attributes, any attached data or event listeners) stays in the DOM.
+
+Safe: script tags, HTMX state, and any attributes on the target element remain.
+Response may contain multiple sibling nodes.
+outerHTML replaces the target element itself (the whole element, start tag → end tag).
+
+Risky: if the target element (or something containing the HTMX script or CSRF headers) is replaced by a fragment that doesn’t include the same scripts/attributes, you may remove the HTMX script or required attributes — after that HTMX stops working (typeof htmx becomes undefined or swaps fail).
+Requires the response be a single root element that can replace the target cleanly.
+Why your app behaved the way it did
+
+Your initial page was delivered with ui/page (which includes HTMX). HTMX runs and sends requests.
+Some buttons used outerHTML targeting large elements (or body). A server fragment without the expected root element or without scripts/headers caused HTMX to fail when it attempted the swap — that produced the minified htmx stacktrace and no further requests.
+Changing to innerHTML and targeting a stable container (#main-content) preserves the container and the HTMX environment, so swaps succeed and subsequent HTMX behavior keeps working.
+Concrete rules to follow
+
+Target a specific container id, e.g. #main-content.
+Use hx-swap="innerHTML" for typical fragment replacement.
+Use outerHTML only when you intentionally want to replace the element itself and you ensure the response contains the replacement element and any needed scripts/attributes.
+Ensure server responses for HTMX requests are HTML fragments (content-type text/html). For direct browser loads, return a full page (ui/page).
+
+Example fixes for your code (change outerHTML → innerHTML and target #main-content) Use these snippets where you currently have outerHTML or body-targeting swaps.
+
+// ...existing code...
+[:div#main-content
+ ;; safer: swap into this container's innerHTML
+ (biff/form
+  {:action "/app/set-foo"}
+  ;; ...
+  )
+ ;; previously: hx-target "#main-content" :hx-swap "outerHTML"
+ [:button.text-black-500.hover:text-black-800
+  {:type "button"
+   :hx-get "/app/click-to-edit"
+   :hx-target "#main-content"
+   :hx-swap "innerHTML"
+   :class "btn primary"}
+  "Onclick"]
+ ;; previously targeted body with outerHTML — change to target #main-content + innerHTML
+ [:button {:type "button" :hx-get "/app/bulk-update" :hx-target "#main-content" :hx-swap "innerHTML" :class "btn danger"} "Bulk update page"]
+ [:button {:type "button" :hx-get "/app/value-select" :hx-target "#main-content" :hx-swap "innerHTML" :class "btn primary"} "Value Select"]
+// ...existing code...
+
+Also update fragment handlers and buttons so they target the same container:
+
+// ...existing code...
+[:button.btn {:hx-get "/app/form" :class "btn primary" :type "button"
+              :hx-target "#main-content" :hx-swap "innerHTML"} "Click to Edit"]
+// ...existing code...
+[:form {:hx-post "/app/click-to-edit-save" :hx-target "#main-content" :hx-swap "innerHTML"} ...]
+// ...existing code...
+[:button.btn {:hx-get "/app/click-to-edit" :type "button" :hx-target "#main-content" :hx-swap "innerHTML"} "Cancel"]
+// ...existing code...
+
+Extra checks to avoid surprises
+
+Inspect Network → Response: fragment should be HTML (not JSON/EDN or an error page).
+Confirm the page always has the target element (#main-content) present at click time.
+If you open a fragment URL directly in the browser, return a full page (ui/page) — use the fragment-or-page helper if needed so direct loads include scripts.
+If you want, I can generate exact replacements across your app.clj (show full diff snippets). Which files/handlers should I edit in the example snippets for you to copy into your project?

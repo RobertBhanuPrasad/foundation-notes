@@ -14,16 +14,16 @@
 (defn xt-node [ctx]
   ;; Biff typically puts the XTDB node on the ctx under :biff/xtdb-node
   (or (:biff.xtdb/node ctx)
-   (:biff/xtdb-node ctx)
-   (:xtdb/node ctx) ;; fallback if different
-   (throw (ex-info "XT node not found in ctx" {}))))
+      (:biff/xtdb-node ctx)
+      (:xtdb/node ctx) ;; fallback if different
+      (throw (ex-info "XT node not found in ctx" {}))))
 
 (defn now [] (java.util.Date.))
 
 (defn create-todo! [ctx title]
   (let [node (xt-node ctx)
         id   (java.util.UUID/randomUUID)
-        doc  {:xt/id id  
+        doc  {:xt/id id
               :todo/id id
               :todo/title (str/trim (or title ""))
               :todo/done false
@@ -105,8 +105,8 @@
        :hx-target "#todo-list"
        :hx-swap "innerHTML"
        ;; include CSRF header
-      :hx-headers (cheshire.core/generate-string
-                   {:x-csrf-token csrf/*anti-forgery-token*})}
+       :hx-headers (cheshire.core/generate-string
+                    {:x-csrf-token csrf/*anti-forgery-token*})}
       [:input {:type "text" :name "title" :placeholder "What needs to be done?" :required true
                :style "width:70%;padding:8px;margin-right:8px;"}]
       [:button {:type "submit"} "Add"]]
@@ -138,7 +138,7 @@
 
 
 (defn handle-toggle [ctx]
-    (prn "CTX params:" (:path-params ctx))
+  (prn "CTX params:" (:path-params ctx))
   (prn "CTX path-params:" (get-in ctx [:biff/req :path-params]))
   (let [id-str (get-in ctx [:path-params :id])]
     (if (str/blank? id-str)

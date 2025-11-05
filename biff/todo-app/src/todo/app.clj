@@ -103,6 +103,7 @@
         "Sign out"])
       "."]
      [:.h-6]
+     [:div#main-content
      (biff/form
       {:action "/app/set-foo"}
       [:label.block {:for "foo"} "Foo: "
@@ -115,24 +116,70 @@
       [:.h-1]
       [:.text-sm.text-gray-600
        "This demonstrates updating a value with a plain old form."])
-     [:button.text-black-500.hover:text-black-800 {:type "button" :hx-get "/app/test" :hx-target "body" :hx-swap "outerHTML" :class "btn primary"}
+     [:button.text-black-500.hover:text-black-800 {:type "button" :hx-get "/app/click-to-edit" :hx-target "#main-content" :hx-swap "outerHTML" :class "btn primary"}
       "Onclick"]
-     [:a {:href "/app/test"} "Get to test page"]
+     [:a {:href "/app/click-to-edit"} "Get to test page"]
      [:button {:type "button" :hx-get "/app/bulk-update" :hx-target "body" :hx-swap "innerHTML" :class "btn danger"} "Bulk update page"]
      [:button {:type "button" :hx-get "/app/value-select" :hx-target "body" :hx-swap "outerHTML" :class "btn primary"} "Value Select"]
      [:.h-6]
      (bar-form {:value bar})
      [:.h-6]
-     (chat ctx))))
+     (chat ctx)])))
 
-(defn test [ctx]
+(defn test-page [ctx]
   (ui/page
    ctx
-  [:div#main-content {:hx-target "this" :hx-swap "outerHTML"}
+  [:div#test-page {:hx-target "this" :hx-swap "outerHTML"}
    [:div [:label "First Name"] ": bhanu"]
    [:div [:label "Last Name"] ": robert"]
    [:div [:label "Email"] ": bhanu@gmail.com"]
-   [:button.btn {:hx-get "/app/form" :class "btn primary" :type "button" :hx-target "#main-content" :hx-swap "outerHTML"} "Click to Edit"]]))
+   [:button.btn {:hx-get "/app/form" :class "btn primary" :type "button" :hx-target "#test-page" :hx-swap "outerHTML"} "Click to Edit"]]))
+
+(defn click-to-edit [{:keys [biff/db session ctx]}]
+  (ui/page
+   ctx
+  (let [user (xt/entity db (:uid session))
+        {:user/keys [first-name last-name email]} user]
+    [:div#main-content {:hx-target "this" :hx-swap "innerHTML"}
+     [:div [:label "First Name"] ": " first-name]
+     [:div [:label "Last Name"] ": " last-name]
+     [:div [:label "Email Address"] ": " email]
+     [:button.btn {:hx-get "/app/click-to-edit-form"
+                   :class "btn primary"
+                   :type "button"
+                   :hx-target "#main-content"
+                   :hx-swap "innerHTML"} "Click to Edit"]])))
+
+(defn click-to-edit-form [{:keys [biff/db session]}]
+  (let [user (xt/entity db (:uid session))
+        {:user/keys [first-name last-name email]} user]
+    [:form {:hx-post "/app/click-to-edit-save"
+            :hx-target "#main-content"
+            :hx-swap "innerHTML"}
+     [:div
+      [:label "First Name"]
+      [:input.w-full {:type "text" :name "first-name" :value first-name}]]
+     [:div
+      [:label "Last Name"]
+      [:input.w-full {:type "text" :name "last-name" :value last-name}]]
+     [:div
+      [:label "Email Address"]
+      [:input.w-full {:type "email" :name "email" :value email}]]
+     [:button.btn {:type "submit"} "Save"]
+     [:button.btn {:hx-get "/app/click-to-edit" :type "button" :hx-target "#main-content" :hx-swap "innerHTML"} "Cancel"]]))
+
+(defn click-to-edit-save [{:keys [session params] :as ctx}]
+  (println "debugtopbhanu" (:uid session) "params" params)
+  (let [{:keys [first-name last-name email]} params]
+     (biff/submit-tx ctx
+                    [{:db/op :update
+                      :db/doc-type :user
+                      :xt/id (:uid session)
+                      :user/first-name first-name
+                      :user/last-name last-name
+                      :user/email email}])
+    {:status 200
+     :headers {"HX-Redirect" "/app/click-to-edit"}}))
 
 
 (defn form-page [ctx]
@@ -204,7 +251,10 @@
   {:static {"/about/" about-page}
    :routes ["/app" {:middleware [mid/wrap-signed-in]}
             ["" {:get app}]
-            ["/test" {:get test}]
+            ["/test" {:get test-page}]
+            ["/click-to-edit" {:get click-to-edit}]
+            ["/click-to-edit-form" {:get click-to-edit-form}]
+            ["/click-to-edit-save" {:post click-to-edit-save}]
             ["/form" {:get form-page}]
             ["/bulk-update" {:get bulk-update}]
             ["/value-select" {:get value-select}]
