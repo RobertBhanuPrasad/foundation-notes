@@ -41,9 +41,7 @@
   {:status 200})
 
 (defn all-todos [ctx]
-  (let [todos [{:id 1 :title "Buy milk"}
-               {:id 2 :title "Write report"}
-               {:id 3 :title "Call Alice"}]]
+  (let [todos []]
     [:ul#todo-list
      (for [{:keys [id title]} todos]
        ^{:key id}
