@@ -3,24 +3,55 @@
    [com.biffweb :as biff]
    [todo.ui :as ui])) 
    
+(defonce todos (atom []))
+
 (defn add-todo [ctx]
-  (let [title (:title (:params ctx))]
+  (let [title (:title (:params ctx))
+        id    (str (random-uuid))
+        todo  {:id id :title (or title "")}]
+    (println "todobhanu" todo)
+    (swap! todos conj todo)
     [:li
-     {:id    (str "todo-" (random-uuid))
+     {:id    (str "todo-" id)
       :style {:display        "flex"
               :align-items    "center"
               :gap            "8px"
               :padding        "8px 0"
               :border-bottom  "1px solid #eee"}}
-     [:span.title {:style {:flex "1" :cursor "pointer"} :hx-get "todo/todos" :hx-swap "outerHTML"} title]
+     [:span.title {:style {:flex "1" :cursor "pointer"}
+                   :hx-get  (str "/todo/todos/" id)
+                   :hx-target (str "#todo-" id)
+                   :hx-swap "outerHTML"} (:title todo)]
     ;;  [:button#edit-button {:type "button" :class "btn" :hx-get "todo/todos" :hx-target "previous" :hx-swap "outerHTML"} "Edit"]
      [:button {:type "button" :class "btn danger" 
-               :hx-target "closest li"
-               :hx-swap "outerHTML"
-               :hx-delete "/todo/todos"} "Delete"]]))
+               :hx-target (str "#todo-" id)
+               :hx-swap "delete"
+               :hx-delete (str "/todo/todos/" id)} "Delete"]]))
 
-(defn get-label [ctx] 
-   [:input {:type "text" :name "title" :required true :hx-put "todo/todos" :hx-swap "outerHTML"}])
+(defn edit-todo [ctx]
+  (let [id (get-in ctx [:path-params :id])
+        todo (some #(when (= (:id %) id) %) @todos)]
+    (if todo
+      [:li
+       {:id (str "todo-" id)
+        :style {:display "flex" :align-items "center"
+                :gap "8px" :padding "8px 0"
+                :border-bottom "1px solid #eee"}}
+       ;; When form submitted, PUT request updates todo
+       (biff/form
+        {:hx-put (str "/todo/todos/" id)
+         :hx-target (str "#todo-" id)
+         :hx-swap "outerHTML"}
+        [:input {:type "text"
+                 :name "title"
+                 :value (:title todo)
+                 :required true
+                 :style {:flex "1"}}]
+        [:button {:type "submit" :class "btn"} "Save"])]
+      {:status 404 :body "Todo not found"})))
+
+;; (defn get-label [ctx] 
+;;    [:input {:type "text" :name "title" :required true :hx-put (str "/todo/todos/" id) :hx-swap "outerHTML"}])
 
 (defn update-label [ctx]
   [:<> 
@@ -28,22 +59,43 @@
    [:button {:type "button" :class "btn" :hx-put "todo/todos" :hx-swap-oob "true" :id "edit-button" :hx-swap "outerHTML"} "Save"]])
 
 (defn update-todo [ctx]
-  (let [title (:title (:params ctx))]
-    {:id    (str "todo-" (random-uuid))
-     :style {:display        "flex"
-             :align-items    "center"
-             :gap            "8px"
-             :padding        "8px 0"
-             :border-bottom  "1px solid #eee"}}
-    [:span.title {:style {:flex "1" :cursor "pointer"} :hx-get "todo/todos" :hx-swap "outerHTML"} title]))
+  (let [id    (get-in ctx [:path-params :id])
+        title (get-in ctx [:params :title])
+        updated (atom nil)]
+    (swap! todos
+           (fn [ts]
+             (mapv (fn [t]
+                     (if (= (:id t) id)
+                       (do
+                         (reset! updated (assoc t :title title))
+                         (assoc t :title title))
+                       t))
+                   ts)))
+    (if @updated
+      [:li
+       {:id    (str "todo-" id)
+        :style {:display        "flex"
+                :align-items    "center"
+                :gap            "8px"
+                :padding        "8px 0"
+                :border-bottom  "1px solid #eee"}}
+       [:span.title {:style {:flex "1" :cursor "pointer"}
+                     :hx-get "todo/todos"
+                     :hx-swap "outerHTML"} (:title @updated)]
+       [:button {:type "button" :class "btn danger"
+                 :hx-target (str "#todo-" id)
+                 :hx-swap "delete"
+                 :hx-delete (str "/todo/todos/" id)} "Delete"]]
+      {:status 404 :body "Todo not found"})))
 
-(defn remove-todo [ctx] 
-  {:status 200})
+(defn remove-todo [ctx]
+  (let [id (get-in ctx [:path-params :id])]
+    (swap! todos (fn [ts] (vec (remove #(= (:id %) id ) ts))))
+  {:status 200}))
 
 (defn all-todos [ctx]
-  (let [todos []]
     [:ul#todo-list
-     (for [{:keys [id title]} todos]
+     (for [{:keys [id title]} @todos]
        ^{:key id}
        [:li
         {:id    (str "todo-" id)
@@ -52,9 +104,15 @@
                  :gap            "8px"
                  :padding        "8px 0"
                  :border-bottom  "1px solid #eee"}}
-        [:span.title {:style {:flex "1" :cursor "pointer"}} title]
+        [:span.title {:style {:flex "1" :cursor "pointer"}
+                      :hx-get  (str "/todo/todos/" id)
+                      :hx-target (str "#todo-" id)
+                      :hx-swap "outerHTML"} title]
         ;; [:button {:type "button" :class "btn"} "Edit"]
-        [:button {:type "button" :class "btn danger"} "Delete"]])]))
+        [:button {:type "button" :class "btn danger"
+                  :hx-delete (str "/todo/todos/" id)
+                  :hx-swap   "delete"
+                  :hx-target (str "#todo-" id)} "Delete"]])])
 
 (defn home-page [ctx]
   (ui/page
@@ -85,9 +143,12 @@
    [["/todo" 
      ["" {:get home-page}]
      ["/todos" {:post add-todo
-                :delete remove-todo
+                ;; :delete remove-todo
                 ;; :get update-label
-                :get get-label
+                ;; :get get-label
                 :put update-todo}]
+     ["/todos/:id" {:get edit-todo
+                    :put update-todo
+                    :delete remove-todo}]
      ["/inputs" {:get inputs}]
      ]]})
