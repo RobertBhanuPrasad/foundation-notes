@@ -1,0 +1,1 @@
+**datalog queries Link** - "https://learn-some.com/chapter/1"

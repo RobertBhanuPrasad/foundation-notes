@@ -1,3 +1,6 @@
+**Clojure Link** - "https://clojure.org/about/rationale" 
+**Clojure Atoms** - "https://clojure.org/reference/atoms" (temaperary state)
+
 **Clojure** - Nice progress so far! Clojure is a functional programming language that runs on the Java Virtual Machine (JVM), meaning it can leverage existing Java libraries while keeping its own elegant syntax.
 It’s part of the LISP family, so you’ll notice lots of parentheses and a focus on expressions rather than statements.
 
