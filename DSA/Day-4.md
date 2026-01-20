@@ -140,3 +140,12 @@ i = 1 j = 0
 1 2
 1 2 3
 1 2 3 4
+
+10) let n=4
+for(i=0;i<n;i++){
+    let row = ""
+    for(j=0;j<=i;j++){
+        row += (i+1)
+    }
+    console.log(row)
+}
