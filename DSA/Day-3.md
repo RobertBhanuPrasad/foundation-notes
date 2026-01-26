@@ -7,7 +7,7 @@ function findSearchValue(x) {
         if(arr[i]==x){
         return i
     }
-        }
+    }
         return -1
     }
 
@@ -22,3 +22,7 @@ const arr = [2, 5, 6, 8, 10, 21, 12]
 
 you have find the second largest number in an array
 
+findSecondLargestNumber(arr){
+    let firstLargestNumber = -Infinity;
+    ler secondLargestNumber = 
+}
