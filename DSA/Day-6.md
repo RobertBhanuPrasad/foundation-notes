@@ -1,6 +1,6 @@
 **Count digit** : Video- 10
 
-1) Math.abs(), Math.floowr,
+1) Math.abs(), Math.floor,
 
 
 function countDigits(num) {
