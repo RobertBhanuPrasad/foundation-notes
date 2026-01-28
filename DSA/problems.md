@@ -30,3 +30,5 @@
 17) Reverse word
 
 18) Smallest number from Namate dev **very good.**
+
+19) Best Time to Buy and Sell Stocks
