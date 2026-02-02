@@ -32,3 +32,6 @@
 18) Smallest number from Namate dev **very good.**
 
 19) Best Time to Buy and Sell Stocks
+20) Merge Sorted Arrays
+
+21) Move zeroes
