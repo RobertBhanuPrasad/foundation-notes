@@ -35,3 +35,6 @@
 20) Merge Sorted Arrays
 
 21) Move zeroes
+22) Max consecutive ones
+23) Missing Number.
+24) Single number.
