@@ -24,7 +24,7 @@
 
 **Arrays** :
 
-14) Remove duplicates.
+14) Remove duplicates. -> 5/
 15) Removed element.
 16) Reverse string
 17) Reverse word
@@ -38,3 +38,5 @@
 22) Max consecutive ones
 23) Missing Number.
 24) Single number.
+25) Two sum
+26) Second Largest digit in a string.
