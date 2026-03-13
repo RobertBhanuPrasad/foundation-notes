@@ -18,3 +18,4 @@ when the user logout you have to clear all your data from web browser.
 
 If you are using Redis the browser cannot know, what was there.
 
+

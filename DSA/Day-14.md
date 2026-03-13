@@ -86,7 +86,7 @@ If you removed the base case in the above problem it will lead to **stack over f
 
 **Common Mistakes**:
 
-1) Missong base case -  stack over flow
+1) Missing base case -  stack over flow
 2) Not simplifying the input -  never reaches base case.
 3) Too deep recusrion - large inputs
 4) Keeping in mind the time complexity - **O(n)**
@@ -94,5 +94,5 @@ If you removed the base case in the above problem it will lead to **stack over f
 When to use the **Recursion**:
 
 1) Problem can be broken into sum problems.
-2) Treese and graphs.
+2) Trees and graphs.
 3) Backn tracking , DP, Divide and Conquer
