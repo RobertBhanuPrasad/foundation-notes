@@ -1571,3 +1571,341 @@ function reverse(str){
 - `split` → string to array
 - `join` → array to string
 - `slice` → extract string
+
+Robert, since you told them you have ~2 years of experience, interviewers will expect more than arrays, objects, and strings. They will test whether you understand how JavaScript works internally and whether you have used it in real projects.
+
+Below is a complete roadmap of JavaScript topics interviewers ask for 1–2 years experience, including:
+
+What the concept is
+
+Why interviewers ask it
+
+How to answer
+
+Example code
+
+How to explain it verbally in interview
+
+1. Scope in JavaScript
+What is Scope
+
+Scope determines where variables are accessible.
+
+Types:
+
+Global scope
+Function scope
+Block scope
+Why Interviewers Ask
+
+They want to see if you understand how variables behave in programs.
+
+Example
+let a = 10;
+
+function test(){
+ let b = 20;
+ console.log(a);
+}
+
+test();
+
+Output
+
+10
+Why
+
+a is global so it is accessible inside function.
+
+How to Explain in Interview
+
+Scope defines where variables are accessible. JavaScript has global, function, and block scope. Variables declared with let and const are block-scoped, while var is function-scoped.
+
+2. Hoisting
+What is Hoisting
+
+JavaScript moves variable and function declarations to the top of the scope.
+
+Example
+console.log(x);
+
+var x = 5;
+
+Output
+
+undefined
+Why
+
+Because JS interprets it like this:
+
+var x;
+
+console.log(x);
+
+x = 5;
+let and const behavior
+console.log(x);
+
+let x = 5;
+
+Output
+
+ReferenceError
+
+Because of Temporal Dead Zone (TDZ).
+
+Interview Explanation
+
+Hoisting is JavaScript’s behavior of moving declarations to the top. var is hoisted with undefined, while let and const exist in the Temporal Dead Zone until initialization.
+
+3. Closures
+What is Closure
+
+A closure is when a function remembers variables from its outer scope even after the outer function finishes execution.
+
+Example
+function outer(){
+
+ let count = 0;
+
+ return function(){
+  count++;
+  console.log(count);
+ }
+
+}
+
+const fn = outer();
+
+fn();
+fn();
+
+Output
+
+1
+2
+Why Interviewers Ask
+
+Closures are used in:
+
+React hooks
+callbacks
+data privacy
+How to Explain
+
+A closure occurs when a function retains access to variables from its lexical scope even after the outer function has returned.
+
+4. Event Loop
+
+This is very commonly asked.
+
+What is Event Loop
+
+JavaScript is single-threaded, so it uses an event loop to handle asynchronous operations.
+
+Example
+console.log("A");
+
+setTimeout(()=>console.log("B"),0);
+
+Promise.resolve().then(()=>console.log("C"));
+
+console.log("D");
+
+Output
+
+A
+D
+C
+B
+Why
+
+Execution order
+
+Call Stack
+↓
+Microtask Queue (Promises)
+↓
+Macrotask Queue (setTimeout)
+Interview Explanation
+
+JavaScript executes synchronous code first. Then microtasks like Promises run, followed by macrotasks like setTimeout.
+
+5. this Keyword
+What is this
+
+this refers to the object that calls the function.
+
+Example
+const obj = {
+ name: "Robert",
+
+ greet:function(){
+  console.log(this.name);
+ }
+}
+
+obj.greet();
+
+Output
+
+Robert
+Arrow Function Behavior
+const obj = {
+ name:"Robert",
+
+ greet:()=>{
+  console.log(this.name);
+ }
+}
+
+Output
+
+undefined
+
+Because arrow functions do not bind their own this.
+
+6. Promises
+What is Promise
+
+Promise represents an asynchronous operation.
+
+States:
+
+pending
+fulfilled
+rejected
+Example
+const promise = new Promise((resolve,reject)=>{
+
+ setTimeout(()=>{
+  resolve("success");
+ },1000);
+
+});
+
+promise.then(console.log);
+Why Interviewers Ask
+
+Promises are used in:
+
+API calls
+async programming
+React data fetching
+7. Async / Await
+What
+
+Simplified syntax for promises.
+
+Example
+async function getData(){
+
+ const res = await fetch("api");
+
+ const data = await res.json();
+
+ console.log(data);
+
+}
+Interview Explanation
+
+async/await allows writing asynchronous code that looks synchronous while still using promises under the hood.
+
+8. Deep vs Shallow Copy
+Shallow Copy
+
+Copies reference of nested objects.
+
+Example
+
+let a = {x:1};
+
+let b = {...a};
+
+b.x = 10;
+Deep Copy
+
+Copies entire object structure.
+
+Example
+
+JSON.parse(JSON.stringify(obj))
+9. Debouncing
+What
+
+Limits how often a function executes.
+
+Used in:
+
+search inputs
+API calls
+scroll events
+
+Example
+
+function debounce(fn,delay){
+
+ let timer;
+
+ return function(){
+
+  clearTimeout(timer);
+
+  timer = setTimeout(fn,delay);
+
+ }
+
+}
+10. Throttling
+What
+
+Ensures a function runs at most once in a specified time interval.
+
+Used in:
+
+scroll events
+resize events
+11. Prototypes
+
+JavaScript uses prototype-based inheritance.
+
+Example
+
+function Person(name){
+
+ this.name = name;
+
+}
+
+Person.prototype.greet = function(){
+
+ console.log("Hello");
+
+}
+12. Memory Management
+
+JavaScript uses Garbage Collection.
+
+Questions They Might Ask
+
+Example interview questions:
+
+What is closure?
+What is hoisting?
+Difference between var let const?
+Explain event loop
+What is promise?
+Difference between async await and promises?
+Difference between map filter reduce?
+What is this keyword?
+Final Advice for 2-Year Experience
+
+Interviewers expect you to know:
+
+JavaScript fundamentals
+Async behavior
+Closures
+Event loop
+Objects and arrays
+
+If you understand these concepts deeply, you will perform well in the technical interview.
