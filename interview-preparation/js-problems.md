@@ -1890,3 +1890,17 @@ If interviewer asks these, always say:
 - Then explain time complexity
 
 
+
+**Debounce in js**:
+
+function decounce(fn, delay){
+  let timer;
+
+  return function (..args) {
+    clearTimeout(timer)
+
+    timer = setTimeout(() => {
+      fn.apply(this, args)
+    }, delay)
+  }
+}
