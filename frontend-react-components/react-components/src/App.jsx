@@ -1,6 +1,37 @@
 import { useEffect, useState } from 'react'
 // import './App.css'
 
+// Learning Order:
+
+// Phase 1: Foundation Components
+//   Todo List
+//   Accordion
+//   Tabs
+//   Progress Bar
+//   Star Rating
+//   Color Boxes
+// Phase 2: Data Rendering
+//   Pagination with JS
+//   Truncated Pagination with React
+//   Infinite Scroll
+//   Posts with Comments
+//   Nested Comment Section
+// Phase 3: Interactive UI
+//   Carousel
+//   Toast / Notification
+//   Autocomplete / Typeahead
+//   Poll Widget
+// Phase 4: Logic Based
+//   Advance Tic Tac Toe
+//   Match Similar Tiles
+// Phase 5: System Design Components
+//   Config Driven Form
+//   Ecommerce Filters
+//   Shopping Cart
+//   Cinema Hall Seat Booking
+// Phase 6: Layout
+//   Holy Grail Layout
+
 function App() {
   const [count, setCount] = useState(0)
   const [value, setValue] = useState("")
@@ -31,6 +62,12 @@ function App() {
   const [machineTodoSearchValue, setMachineTodoSearchValue] = useState('')
 
   const [opneAccordian, setOpenAccordian] = useState(2)
+
+  const [openTab, setOpenTab] = useState(1)
+
+  const [selectedProgressValue, setSelectedProgressValue] = useState(10)
+
+  const [rating, setRating] = useState(0)
 
   const formatedString = (text) => {
     return text.split(" ").map((word) => {
@@ -175,6 +212,31 @@ function App() {
       setOpenAccordian((prev) => (prev === id ? null : id))
     }
 
+    const tabsData = [
+      {
+        id: 1,
+        title: 'tab - 1',
+        content: 'First tab'
+      },
+      {
+        id: 2,
+        title: 'tab - 2',
+        content: 'Second tab'
+      },
+      {
+        id: 3,
+        title: 'tab - 3',
+        content: 'Third tab'
+      }
+    ]
+
+    function handleTabs(id) {
+      setOpenTab((prev) => (prev === id ? prev : id))
+    }
+
+
+    const progressBarValue = Math.min(Math.max(selectedProgressValue, 0), 100)
+
   return (
     <>
     <div>
@@ -249,11 +311,11 @@ console.log(nums.splice(0, 3), nums) */}
       </div>
       <div>
         <h2>Render a list of items</h2>
-        {fruits.map((fruit, index) => (
+        {fruits.map((fruit, index) => ( // if we are not returning anything we have to use the ()
           <li key={index}>{fruit}</li>
         ))}
         {" "}
-        {fruits.map((fruit, index) => {
+        {fruits.map((fruit, index) => { // if we are returning anything we have to use the {}
           return <li key={index}>{fruit}</li>
         })}
       </div>
@@ -370,6 +432,69 @@ console.log(nums.splice(0, 3), nums) */}
               </div>
             )}
           </div>
+        </div>
+
+        <div>
+          <h3>Tabs</h3>
+          <div>
+            {tabsData.map((data) => 
+              <div key={data.id}>
+                <button key={data.id} onClick={() => handleTabs(data.id)}>{openTab === data.id ? 'open' : 'close'} {data.title}</button>
+                {openTab === data.id && (
+                  <div>{data.content}</div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <h3>Progress Bar</h3>
+          <select value={selectedProgressValue} onChange={(e) => setSelectedProgressValue(e.target.value)}>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+            <option value="60">60</option>
+            <option value="70">70</option>
+            <option value="80">80</option>
+            <option value="90">90</option>
+            <option value="100">100</option>
+          </select>
+            <br></br>
+            <br></br>
+          <div style={{
+            width: '400px',
+            backgroundColor: 'red',
+            height: '25px',
+            borderRadius: '20px',
+            overflow: 'hidden'
+          }}>
+            <div style={{
+              width: `${progressBarValue}%`,
+              backgroundColor: 'green',
+              height: '100%'
+            }}>
+              {}{progressBarValue}%
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3>Start Rating</h3>
+          {[1, 2, 3, 4, 5].map((star) => (
+          <span key={star}
+          onClick={() => setRating(star)}
+          style={{
+            cursor: 'pointer',
+            fontSize: '40px',
+            color: star <= rating ? 'gold' : 'gray'
+          }}>
+            *
+          </span>
+          ))}
+          <p>Rating: {rating}</p>
         </div>
       </div>
     </>
