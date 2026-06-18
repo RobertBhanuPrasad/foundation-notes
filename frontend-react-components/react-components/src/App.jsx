@@ -21,6 +21,16 @@ function App() {
   const [techCount, setTechCount] = useState(0)
   const [techInput, setTechInput] = useState(1)
   const [techhistory, setTechHistory] = useState([])
+  const [taskData, setTaskData] = useState([])
+  const [searchTaskInput, setSearchTaskInput] = useState('')
+  const [sortField, setSortField] = useState("name")
+  const [sortOrder, setSortOrder] = useState("asc")
+
+  const [ machineTodoChangeValue, setMachineTodoChangeValue] = useState('')
+  const [machineTodoAddValue, setMachineTodoAddValue] = useState([])
+  const [machineTodoSearchValue, setMachineTodoSearchValue] = useState('')
+
+  const [opneAccordian, setOpenAccordian] = useState(2)
 
   const formatedString = (text) => {
     return text.split(" ").map((word) => {
@@ -48,7 +58,6 @@ function App() {
 
     function submit(e) {
       e.preventDefault(); //  we are using this to stop the page refresh and not loosing the state date because by default the form behavior is when we click submit the form will automatically refresh or navigate the page.
-      console.log(formInput, "forminputbhanu")
     }
 
     useEffect(() => {
@@ -112,7 +121,60 @@ function App() {
 
       return debounce
     }
-    console.log(techhistory, "techhistorybhanu")
+
+    useEffect(() => {
+      const fetchData = async () => {
+        const data = await fetch('https://jsonplaceholder.typicode.com/users').then(res => res.json().then(data => setTaskData(data)))
+      }
+      fetchData()
+    }, [])
+
+    const taskFilteredData = taskData.filter((data) => data.name.toLowerCase().includes(searchTaskInput.toLowerCase())
+                            ).sort((a, b) => {
+                              const first = a[sortField].toLowerCase();
+                              const second = b[sortField].toLowerCase();
+
+                              if(sortOrder === "asc"){
+                                return first.localeCompare(second)
+                              }else{
+                                return second.localeCompare(first)
+                              }
+                            })
+
+    function handleMachineTodo() {
+      console.log(machineTodoChangeValue, "machinetodochangebhanu", machineTodoAddValue)
+      const newTask = {
+        id: Date.now(),
+        task: machineTodoChangeValue
+      }
+      setMachineTodoAddValue([...machineTodoAddValue, newTask])
+      setMachineTodoChangeValue('')
+    }
+
+    const filteredMachineTodoTasks = machineTodoAddValue.filter((data) => data.task.toLowerCase().includes(machineTodoSearchValue.toLocaleLowerCase()))
+
+    const accordianData = [
+      {
+        id: 1,
+        title: 'HTML',
+        content: 'HTML is a markup language.'
+      },
+      {
+        id: 2,
+        title: 'CSS',
+        content: 'CSS is used for styling.'
+      },
+      {
+        id: 3,
+        title: 'Javascript',
+        content: 'Javascript add interactivity'
+      }
+    ];
+
+    function handleToggleAccordian(id) {
+      setOpenAccordian((prev) => (prev === id ? null : id))
+    }
+
   return (
     <>
     <div>
@@ -264,6 +326,51 @@ console.log(nums.splice(0, 3), nums) */}
         <button onClick={handleDecrement}>Decrement</button>
         <button onClick={handleUndo}>Undo</button>
         <button onClick={hanleReset}>Reset</button>
+
+        <div>
+          <h1>Task data</h1>
+          <input placeholder='seach name...' value={searchTaskInput} onChange={(e) => setSearchTaskInput(e.target.value)}/><br/><br/>
+          <select value={sortField} onChange={(e) => setSortField(e.target.value)}>
+            <option value="name">Name</option>
+            <option value="email">Email</option>
+            <option value="username">User name</option>
+          </select><br/><br/>
+          <button
+          onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+          >Sort: {sortOrder === "asc" ? "A-Z" : "Z-A"}</button>
+          <br/>
+            <ul>{taskFilteredData.map((data) => <li key={data.id}>
+              <strong>Name:</strong> {data.name}<br/>
+              <strong>Email:</strong> {data.email}<br/>
+              <strong>User name:</strong> {data.username}
+              </li>)}</ul>
+        </div>
+
+        <h1>Machine Coding Questions</h1> {/* https://chatgpt.com/share/6a324ae0-4d9c-83e9-9cc7-b763017ce8b9 */}
+
+        <div>
+          <h3>TODO List</h3>
+          <input value={machineTodoChangeValue} onChange={(e) => setMachineTodoChangeValue(e.target.value)} placeholder='add task...'/> 
+          <button onClick={() => handleMachineTodo()}>Add</button>
+          <input placeholder='search task...' value={machineTodoSearchValue} onChange={(e) => setMachineTodoSearchValue(e.target.value)}/>
+          <ul>{filteredMachineTodoTasks.map((data) => <li key={data.id}><input type='checkbox' className='rounded'/>{data.id}- {data.task}</li>)}</ul>
+        </div>
+
+        <div>
+          <h3>Accordian</h3>
+          <div>
+            {accordianData.map((data) =>
+              <div key={data.id}>
+                <button key={data.id} onClick={() => handleToggleAccordian(data.id)}>
+                  {opneAccordian === data.id ? "open" : "close"} {data.title}
+                </button>
+                {opneAccordian === data?.id && (
+                  <div>{data.content}</div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </>
   )
